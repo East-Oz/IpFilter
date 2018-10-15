@@ -13,7 +13,7 @@
 // (".11", '.') -> ["", "11"]
 // ("11.22", '.') -> ["11", "22"]
 
-
+// For save out vector in file
 //#define	SAVE_IN_FILE	1 
 
 std::vector<std::string> split( const std::string &str, char d )
