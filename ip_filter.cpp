@@ -13,7 +13,7 @@
 // (".11", '.') -> ["", "11"]
 // ("11.22", '.') -> ["11", "22"]
 
-// For save out vector in file
+
 //#define	SAVE_IN_FILE	1 
 
 std::vector<std::string> split( const std::string &str, char d )
@@ -40,19 +40,19 @@ bool sort_function( const std::vector<std::string>& rval, const std::vector<std:
 {
 	try
 	{
-		if( stoi( rval.at( 0 ) ) > stoi( lval.at( 0 ) ) )
+		if( std::stoi( rval.at( 0 ) ) >  std::stoi( lval.at( 0 ) ) )
 			return true;
-		else if( stoi( rval.at( 0 ) ) == stoi( lval.at( 0 ) ) )
+		else if( std::stoi( rval.at( 0 ) ) == std::stoi( lval.at( 0 ) ) )
 		{
-			if( stoi( rval.at( 1 ) ) > stoi( lval.at( 1 ) ) )
+			if( std::stoi( rval.at( 1 ) ) >  std::stoi( lval.at( 1 ) ) )
 				return true;
-			else if( stoi( rval.at( 1 ) ) == stoi( lval.at( 1 ) ) )
+			else if( std::stoi( rval.at( 1 ) ) == std::stoi( lval.at( 1 ) ) )
 			{
-				if( stoi( rval.at( 2 ) ) > stoi( lval.at( 2 ) ) )
+				if( std::stoi( rval.at( 2 ) ) >  std::stoi( lval.at( 2 ) ) )
 					return true;
-				else if( stoi( rval.at( 2 ) ) == stoi( lval.at( 2 ) ) )
+				else if( std::stoi( rval.at( 2 ) ) == std::stoi( lval.at( 2 ) ) )
 				{
-					if( stoi( rval.at( 3 ) ) > stoi( lval.at( 3 ) ) )
+					if( std::stoi( rval.at( 3 ) ) >  std::stoi( lval.at( 3 ) ) )
 						return true;
 					else
 						return false;
@@ -102,15 +102,15 @@ int main( int argc, char const *argv[] )
 		{
 			try
 			{
-				if( stoi( val.at( 0 ) ) == 1 )
+				if( std::stoi( val.at( 0 ) ) == 1 )
 					return true;
-				else if( ( stoi( val.at( 0 ) ) == 46 )
-						 && ( stoi( val.at( 1 ) ) == 70 ) )
+				else if( ( std::stoi( val.at( 0 ) ) == 46 )
+						 && ( std::stoi( val.at( 1 ) ) == 70 ) )
 					return true;
-				else if( ( stoi( val.at( 0 ) ) == 46 )
-						 || ( stoi( val.at( 1 ) ) == 46 )
-						 || ( stoi( val.at( 2 ) ) == 46 )
-						 || ( stoi( val.at( 3 ) ) == 46 )
+				else if( ( std::stoi( val.at( 0 ) ) == 46 )
+						 || ( std::stoi( val.at( 1 ) ) == 46 )
+						 || ( std::stoi( val.at( 2 ) ) == 46 )
+						 || ( std::stoi( val.at( 3 ) ) == 46 )
 						 )
 					return true;
 				else
@@ -126,7 +126,7 @@ int main( int argc, char const *argv[] )
 		{
 			try
 			{
-				if( stoi( val.at( 0 ) ) == 1 )
+				if( std::stoi( val.at( 0 ) ) == 1 )
 					return true;
 				else
 					return false;
@@ -143,8 +143,8 @@ int main( int argc, char const *argv[] )
 		{
 			try
 			{
-				if( ( stoi( val.at( 0 ) ) == 46 )
-					&& ( stoi( val.at( 1 ) ) == 70 ) )
+				if( ( std::stoi( val.at( 0 ) ) == 46 )
+					&& ( std::stoi( val.at( 1 ) ) == 70 ) )
 					return true;
 				else
 					return false;
@@ -161,10 +161,10 @@ int main( int argc, char const *argv[] )
 		{
 			try
 		{
-			if( ( stoi( val.at( 0 ) ) == 46 )
-				|| ( stoi( val.at( 1 ) ) == 46 )
-				|| ( stoi( val.at( 2 ) ) == 46 )
-				|| ( stoi( val.at( 3 ) ) == 46 )
+			if( ( std::stoi( val.at( 0 ) ) == 46 )
+				|| ( std::stoi( val.at( 1 ) ) == 46 )
+				|| ( std::stoi( val.at( 2 ) ) == 46 )
+				|| ( std::stoi( val.at( 3 ) ) == 46 )
 				)
 				return true;
 			else
