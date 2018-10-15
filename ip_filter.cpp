@@ -1,3 +1,8 @@
+// IpFilter.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -5,6 +10,7 @@
 #include <vector>
 #include <algorithm> 
 #include <fstream>
+#include <sstream>
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -15,6 +21,14 @@
 
 
 //#define	SAVE_IN_FILE	1 
+
+
+int string_to_int( std::string s )
+{
+	int i;
+	std::istringstream( s ) >> i;
+	return i;
+}
 
 std::vector<std::string> split( const std::string &str, char d )
 {
@@ -40,19 +54,19 @@ bool sort_function( const std::vector<std::string>& rval, const std::vector<std:
 {
 	try
 	{
-		if( std::stoi( rval.at( 0 ) ) >  std::stoi( lval.at( 0 ) ) )
+		if( string_to_int( rval.at( 0 ) ) >  string_to_int( lval.at( 0 ) ) )
 			return true;
-		else if( std::stoi( rval.at( 0 ) ) == std::stoi( lval.at( 0 ) ) )
+		else if( string_to_int( rval.at( 0 ) ) == string_to_int( lval.at( 0 ) ) )
 		{
-			if( std::stoi( rval.at( 1 ) ) >  std::stoi( lval.at( 1 ) ) )
+			if( string_to_int( rval.at( 1 ) ) >  string_to_int( lval.at( 1 ) ) )
 				return true;
-			else if( std::stoi( rval.at( 1 ) ) == std::stoi( lval.at( 1 ) ) )
+			else if( string_to_int( rval.at( 1 ) ) == string_to_int( lval.at( 1 ) ) )
 			{
-				if( std::stoi( rval.at( 2 ) ) >  std::stoi( lval.at( 2 ) ) )
+				if( string_to_int( rval.at( 2 ) ) >  string_to_int( lval.at( 2 ) ) )
 					return true;
-				else if( std::stoi( rval.at( 2 ) ) == std::stoi( lval.at( 2 ) ) )
+				else if( string_to_int( rval.at( 2 ) ) == string_to_int( lval.at( 2 ) ) )
 				{
-					if( std::stoi( rval.at( 3 ) ) >  std::stoi( lval.at( 3 ) ) )
+					if( string_to_int( rval.at( 3 ) ) >  string_to_int( lval.at( 3 ) ) )
 						return true;
 					else
 						return false;
@@ -102,15 +116,15 @@ int main( int argc, char const *argv[] )
 		{
 			try
 			{
-				if( std::stoi( val.at( 0 ) ) == 1 )
+				if( string_to_int( val.at( 0 ) ) == 1 )
 					return true;
-				else if( ( std::stoi( val.at( 0 ) ) == 46 )
-						 && ( std::stoi( val.at( 1 ) ) == 70 ) )
+				else if( ( string_to_int( val.at( 0 ) ) == 46 )
+						 && ( string_to_int( val.at( 1 ) ) == 70 ) )
 					return true;
-				else if( ( std::stoi( val.at( 0 ) ) == 46 )
-						 || ( std::stoi( val.at( 1 ) ) == 46 )
-						 || ( std::stoi( val.at( 2 ) ) == 46 )
-						 || ( std::stoi( val.at( 3 ) ) == 46 )
+				else if( ( string_to_int( val.at( 0 ) ) == 46 )
+						 || ( string_to_int( val.at( 1 ) ) == 46 )
+						 || ( string_to_int( val.at( 2 ) ) == 46 )
+						 || ( string_to_int( val.at( 3 ) ) == 46 )
 						 )
 					return true;
 				else
