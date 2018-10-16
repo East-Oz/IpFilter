@@ -6,8 +6,8 @@ add_executable( ip_filter ip_filter.cpp )
 
 
 set_target_properties( ip_filter PROPERTIES
-	CXX_STANDART 14
-	CXX_STANDART_REQUIRED ON
+	CXX_STANDARD 14
+	CXX_STANDARD_REQUIRED ON
 	COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
 )
 
