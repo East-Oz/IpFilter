@@ -17,6 +17,7 @@
 
 //#define	SAVE_IN_FILE	1 
 
+using ip_addr_vec = std::vector<std::vector<std::string>>;
 
 int string_to_int( std::string s )
 {
@@ -81,9 +82,6 @@ bool sort_function( const std::vector<std::string>& rval, const std::vector<std:
 
 int main( int argc, char const *argv[] )
 {
-
-	using ip_addr_vec = std::vector<std::vector<std::string>>;
-
 	try
 	{
 		ip_addr_vec ip_pool;
