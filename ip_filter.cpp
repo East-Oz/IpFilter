@@ -7,8 +7,6 @@
 #include <fstream>
 #include <sstream>
 #include <chrono>
-#include <xfunctional>
-
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -101,7 +99,7 @@ int main( int argc, char const *argv[] )
 		
 		// reverse lexicographically sort 
 		//std::sort( ip_pool.begin(), ip_pool.end(), sort_function );
-		std::sort( ip_pool.begin(), ip_pool.end(), std::greater<>() );
+		std::sort( ip_pool.rbegin(), ip_pool.rend() );
 
 		// copy sorted vector to output vector
 		ip_pool_out = ip_pool;
