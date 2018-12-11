@@ -1,4 +1,3 @@
-
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -7,6 +6,9 @@
 #include <algorithm> 
 #include <fstream>
 #include <sstream>
+#include <chrono>
+#include <xfunctional>
+
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -19,13 +21,6 @@
 //#define	SAVE_IN_FILE	1 
 
 
-int string_to_int( std::string s )
-{
-	int i;
-	std::istringstream( s ) >> i;
-	return i;
-}
-
 std::vector<std::string> split( const std::string &str, char d )
 {
 	std::vector<std::string> r;
@@ -35,56 +30,63 @@ std::vector<std::string> split( const std::string &str, char d )
 	while( stop != std::string::npos )
 	{
 		r.push_back( str.substr( start, stop - start ) );
-
 		start = stop + 1;
 		stop = str.find_first_of( d, start );
 	}
-
 	r.push_back( str.substr( start ) );
-
 	return r;
 }
 
 
-bool sort_function( const std::vector<std::string>& rval, const std::vector<std::string>& lval )
+unsigned char string_to_char( std::string val )
 {
-	try
+	unsigned char out_value = 0;
+	const char *start = val.c_str();
+	char c;
+	int n = 0;
+	size_t size = val.size();
+	int count = 0;
+	while( count < size )
 	{
-		if( string_to_int( rval.at( 0 ) ) >  string_to_int( lval.at( 0 ) ) )
-			return true;
-		else if( string_to_int( rval.at( 0 ) ) == string_to_int( lval.at( 0 ) ) )
+		c = *start;
+		++start;
+		if( c >= '0' && c <= '9' )
 		{
-			if( string_to_int( rval.at( 1 ) ) >  string_to_int( lval.at( 1 ) ) )
-				return true;
-			else if( string_to_int( rval.at( 1 ) ) == string_to_int( lval.at( 1 ) ) )
-			{
-				if( string_to_int( rval.at( 2 ) ) >  string_to_int( lval.at( 2 ) ) )
-					return true;
-				else if( string_to_int( rval.at( 2 ) ) == string_to_int( lval.at( 2 ) ) )
-				{
-					if( string_to_int( rval.at( 3 ) ) >  string_to_int( lval.at( 3 ) ) )
-						return true;
-					else
-						return false;
-				}
-				else
-					return false;
-			}
-			else
-				return false;
+			n *= 10;
+			n += c - '0';
 		}
-		else
-			return false;
+		++count;
 	}
-	catch( ... ) { return false; }
+	out_value = n;
+
+	return out_value;
+}
+
+
+std::vector<unsigned char> get_vector_ip( std::string str, char d )
+{
+	std::vector<unsigned char> out;
+
+	std::string::size_type start = 0;
+	std::string::size_type stop = str.find_first_of( d );
+	while( stop != std::string::npos )
+	{
+		out.push_back( string_to_char( str.substr( start, stop - start ) ) );
+		start = stop + 1;
+		stop = str.find_first_of( d, start );
+	}
+	out.push_back( string_to_char(  str.substr( start ) ) );
+
+	return out;
 }
 
 
 int main( int argc, char const *argv[] )
 {
+	using ip_addr_vec = std::vector<std::vector<unsigned char>>;
 
-	using ip_addr_vec = std::vector<std::vector<std::string>>;
 
+	auto start = std::chrono::steady_clock::now();
 	try
 	{
 		ip_addr_vec ip_pool;
@@ -93,13 +95,13 @@ int main( int argc, char const *argv[] )
 		for( std::string line; std::getline( std::cin, line );)
 		{
 			std::vector<std::string> v = split( line, '\t' );
-			ip_pool.push_back( split( v.at( 0 ), '.' ) );
-		}
+			ip_pool.push_back( get_vector_ip( v.at( 0 ), '.' ) );
 
+		}
 		
 		// reverse lexicographically sort 
-		// (I think this is a great function for lambda expression )
-		std::sort( ip_pool.begin(), ip_pool.end(), sort_function );
+		//std::sort( ip_pool.begin(), ip_pool.end(), sort_function );
+		std::sort( ip_pool.begin(), ip_pool.end(), std::greater<>() );
 
 		// copy sorted vector to output vector
 		ip_pool_out = ip_pool;
@@ -108,19 +110,19 @@ int main( int argc, char const *argv[] )
 		ip_addr_vec ip_temp( ip_pool.size());
 
 		// find all elements by condition
-		auto it = std::copy_if( ip_pool.begin(), ip_pool.end(), ip_temp.begin(), [ & ]( const std::vector<std::string>& val )
+		auto it = std::copy_if( ip_pool.begin(), ip_pool.end(), ip_temp.begin(), [ & ]( const std::vector<unsigned char>& val )
 		{
 			try
 			{
-				if( string_to_int( val.at( 0 ) ) == 1 )
+				if( val.at( 0 ) == 1 )
 					return true;
-				else if( ( string_to_int( val.at( 0 ) ) == 46 )
-						 && ( string_to_int( val.at( 1 ) ) == 70 ) )
+				else if( ( val.at( 0 ) == 46 )
+						 &&  ( val.at( 1 ) == 70 ) )
 					return true;
-				else if( ( string_to_int( val.at( 0 ) ) == 46 )
-						 || ( string_to_int( val.at( 1 ) ) == 46 )
-						 || ( string_to_int( val.at( 2 ) ) == 46 )
-						 || ( string_to_int( val.at( 3 ) ) == 46 )
+				else if( (  val.at( 0 ) == 46 )
+						 || ( val.at( 1 )  == 46 )
+						 || ( val.at( 2 )  == 46 )
+						 ||  ( val.at( 3 )  == 46 )
 						 )
 					return true;
 				else
@@ -132,11 +134,11 @@ int main( int argc, char const *argv[] )
 	
 		// 1 condition first byte == 1
 		ip_addr_vec ip_cond1( ip_temp.size() );
-		auto it1 = std::copy_if( ip_temp.begin(), ip_temp.end(), ip_cond1.begin(), [ & ]( const std::vector<std::string>& val )
+		auto it1 = std::copy_if( ip_temp.begin(), ip_temp.end(), ip_cond1.begin(), [ & ]( const std::vector<unsigned char>& val )
 		{
 			try
 			{
-				if( std::stoi( val.at( 0 ) ) == 1 )
+				if(  val.at( 0 ) == 1 )
 					return true;
 				else
 					return false;
@@ -149,12 +151,12 @@ int main( int argc, char const *argv[] )
 		
 		// 2 condition 46.70.*.*
 		ip_addr_vec ip_cond2( ip_temp.size() );
-		auto it2 = std::copy_if( ip_temp.begin(), ip_temp.end(), ip_cond2.begin(), [ & ]( const std::vector<std::string>& val )
+		auto it2 = std::copy_if( ip_temp.begin(), ip_temp.end(), ip_cond2.begin(), [ & ]( const std::vector<unsigned char>& val )
 		{
 			try
 			{
-				if( ( std::stoi( val.at( 0 ) ) == 46 )
-					&& ( std::stoi( val.at( 1 ) ) == 70 ) )
+				if( (  val.at( 0 ) == 46 )
+					&& ( val.at( 1 ) == 70 ) )
 					return true;
 				else
 					return false;
@@ -167,18 +169,19 @@ int main( int argc, char const *argv[] )
 
 		// 3 condition  any byte = 46
 		ip_addr_vec ip_cond3( ip_temp.size() );
-		auto it3 = std::copy_if( ip_temp.begin(), ip_temp.end(), ip_cond3.begin(), [ & ]( const std::vector<std::string>& val )
+		auto it3 = std::copy_if( ip_temp.begin(), ip_temp.end(), ip_cond3.begin(), [ & ]( const std::vector<unsigned char>& val )
 		{
 			try
 		{
-			if( ( std::stoi( val.at( 0 ) ) == 46 )
-				|| ( std::stoi( val.at( 1 ) ) == 46 )
-				|| ( std::stoi( val.at( 2 ) ) == 46 )
-				|| ( std::stoi( val.at( 3 ) ) == 46 )
+			if( (  val.at( 0 ) == 46 )
+				|| (  val.at( 1 ) == 46 )
+				|| (  val.at( 2 ) == 46 )
+				|| (  val.at( 3 ) == 46 )
 				)
 				return true;
 			else
 				return false;
+
 		}
 		catch( ... ) { return false; }
 		});
@@ -196,7 +199,7 @@ int main( int argc, char const *argv[] )
 #ifdef SAVE_IN_FILE
 			s = "";
 #endif
-			for( std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part )
+			for( std::vector<unsigned char>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part )
 			{
 				if( ip_part != ip->cbegin() )
 				{
@@ -205,9 +208,9 @@ int main( int argc, char const *argv[] )
 					s.append( "." );
 #endif
 				}
-				std::cout << *ip_part;
+				std::cout << std::to_string(*ip_part);
 #ifdef SAVE_IN_FILE
-				s.append( *ip_part );
+				s.append( std::to_string( *ip_part ) );
 #endif
 			}
 			std::cout << std::endl;
@@ -219,7 +222,6 @@ int main( int argc, char const *argv[] )
 #ifdef SAVE_IN_FILE
 		file.close();
 #endif
-
 
 
 		// 222.173.235.246
