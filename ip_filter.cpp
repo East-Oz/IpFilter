@@ -163,7 +163,7 @@ auto copy_collection( T& _src, T& _dst, Args ... args )
 	return dst_it;
 }
 
-int main( int, char const* )
+int main( int, char** )
 {
 	using ip_addr_vec = std::vector<std::vector<unsigned char>>;
 
