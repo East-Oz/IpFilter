@@ -16,8 +16,10 @@
 // ("11.22", '.') -> ["11", "22"]
 
 
-//#define	SAVE_IN_FILE	1 
+#define	SAVE_IN_FILE	1 
 
+typedef std::vector<unsigned char> IPT;
+typedef std::vector<IPT> IP_STORAGE;
 
 std::vector<std::string> split( const std::string &str, char d )
 {
@@ -34,7 +36,6 @@ std::vector<std::string> split( const std::string &str, char d )
 	r.push_back( str.substr( start ) );
 	return r;
 }
-
 
 unsigned char string_to_char( std::string val )
 {
@@ -73,16 +74,106 @@ std::vector<unsigned char> get_vector_ip( std::string str, char d )
 		start = stop + 1;
 		stop = str.find_first_of( d, start );
 	}
-	out.push_back( string_to_char(  str.substr( start ) ) );
+	out.push_back( string_to_char( str.substr( start ) ) );
 
 	return out;
+}
+
+
+bool find_elements_function( const std::vector<unsigned char>& val )
+{
+	try
+	{
+		if( val.at( 0 ) == 1 )
+			return true;
+		else if( (val.at( 0 ) == 46)
+			&& (val.at( 1 ) == 70) )
+			return true;
+		else if( (val.at( 0 ) == 46)
+			|| (val.at( 1 ) == 46)
+			|| (val.at( 2 ) == 46)
+			|| (val.at( 3 ) == 46)
+			)
+			return true;
+		else
+			return false;
+	}
+	catch( ... ) { return false; }
+}
+
+bool find_elem_cond3( const std::vector<unsigned char>& val )
+{
+	try
+	{
+		if( ( val.at( 0 ) == 46 )
+			|| ( val.at( 1 )  == 46 )
+			|| ( val.at( 2 )  == 46 )
+			|| ( val.at( 3 ) == 46 )
+			)
+			return true;
+		else
+			return false;
+	}
+	catch( ... ) { return false; }
+}
+
+template <typename T, typename U, typename K>
+bool compare( T& _src, U count, K val )
+{
+	if( count > 3 ) { return false; }
+	if( _src.at( count ) != val )
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+
+template<typename T, typename U, typename K, typename ...Args>
+bool compare( T& _src, U count, K val, Args ... args )
+{
+	bool bResult = false;
+	if( count > 3 ) { return false; }
+	if( _src.at( count ) != val )
+	{
+		return false;
+	}
+	else
+	{
+		bResult = true;
+		++count;
+		bResult &= compare( _src, count, args... );
+	}
+	return bResult;
+}
+
+
+
+template<typename T, typename ...Args>
+auto copy_collection( T& _src, T& _dst, Args ... args )
+{
+	bool bResult = false;
+	IP_STORAGE::iterator dst_it = _dst.begin();
+	for( IP_STORAGE::iterator it = _src.begin(); it != _src.end(); ++it )
+	{
+		int count = 0;
+		bResult = compare( *it, count, args... );
+
+		if( bResult )
+		{
+			*dst_it++ = *it;
+		}
+	}
+	return dst_it;
 }
 
 
 int main( int argc, char const *argv[] )
 {
 	using ip_addr_vec = std::vector<std::vector<unsigned char>>;
-
 
 	auto start = std::chrono::steady_clock::now();
 	try
@@ -94,95 +185,39 @@ int main( int argc, char const *argv[] )
 		{
 			std::vector<std::string> v = split( line, '\t' );
 			ip_pool.push_back( get_vector_ip( v.at( 0 ), '.' ) );
-
 		}
-		
+
 		// reverse lexicographically sort 
-		//std::sort( ip_pool.begin(), ip_pool.end(), sort_function );
-		std::sort( ip_pool.rbegin(), ip_pool.rend() );
+		std::sort( ip_pool.begin(), ip_pool.end(), std::greater<>() );
 
 		// copy sorted vector to output vector
 		ip_pool_out = ip_pool;
 
 		// Create temp vector for all conditions
-		ip_addr_vec ip_temp( ip_pool.size());
+		ip_addr_vec ip_temp( ip_pool.size() );
 
-		// find all elements by condition
-		auto it = std::copy_if( ip_pool.begin(), ip_pool.end(), ip_temp.begin(), [ & ]( const std::vector<unsigned char>& val )
-		{
-			try
-			{
-				if( val.at( 0 ) == 1 )
-					return true;
-				else if( ( val.at( 0 ) == 46 )
-						 &&  ( val.at( 1 ) == 70 ) )
-					return true;
-				else if( (  val.at( 0 ) == 46 )
-						 || ( val.at( 1 )  == 46 )
-						 || ( val.at( 2 )  == 46 )
-						 ||  ( val.at( 3 )  == 46 )
-						 )
-					return true;
-				else
-					return false;
-			}
-			catch( ... ) { return false; }
-		} );
+		auto it = std::copy_if( ip_pool.begin(), ip_pool.end(), ip_temp.begin(), find_elements_function );
 		ip_temp.resize( std::distance( ip_temp.begin(), it ) );
-	
+
 		// 1 condition first byte == 1
 		ip_addr_vec ip_cond1( ip_temp.size() );
-		auto it1 = std::copy_if( ip_temp.begin(), ip_temp.end(), ip_cond1.begin(), [ & ]( const std::vector<unsigned char>& val )
-		{
-			try
-			{
-				if(  val.at( 0 ) == 1 )
-					return true;
-				else
-					return false;
-			}
-			catch( ... ) { return false; }
-		} );
+
+
+		auto it1 = copy_collection( ip_temp, ip_cond1, 1 );
 		ip_cond1.resize( std::distance( ip_cond1.begin(), it1 ) );
 		ip_pool_out.reserve( ip_pool_out.size() + ip_cond1.size() );
 		ip_pool_out.insert( ip_pool_out.end(), ip_cond1.begin(), ip_cond1.end() );
-		
+
 		// 2 condition 46.70.*.*
 		ip_addr_vec ip_cond2( ip_temp.size() );
-		auto it2 = std::copy_if( ip_temp.begin(), ip_temp.end(), ip_cond2.begin(), [ & ]( const std::vector<unsigned char>& val )
-		{
-			try
-			{
-				if( (  val.at( 0 ) == 46 )
-					&& ( val.at( 1 ) == 70 ) )
-					return true;
-				else
-					return false;
-			}
-			catch( ... ) { return false; }
-		} );
+		auto it2 = copy_collection( ip_temp, ip_cond2, 46, 70 );
 		ip_cond2.resize( std::distance( ip_cond2.begin(), it2 ) );
 		ip_pool_out.reserve( ip_pool_out.size() + ip_cond2.size() );
 		ip_pool_out.insert( ip_pool_out.end(), ip_cond2.begin(), ip_cond2.end() );
 
 		// 3 condition  any byte = 46
 		ip_addr_vec ip_cond3( ip_temp.size() );
-		auto it3 = std::copy_if( ip_temp.begin(), ip_temp.end(), ip_cond3.begin(), [ & ]( const std::vector<unsigned char>& val )
-		{
-			try
-		{
-			if( (  val.at( 0 ) == 46 )
-				|| (  val.at( 1 ) == 46 )
-				|| (  val.at( 2 ) == 46 )
-				|| (  val.at( 3 ) == 46 )
-				)
-				return true;
-			else
-				return false;
-
-		}
-		catch( ... ) { return false; }
-		});
+		auto it3 = std::copy_if( ip_temp.begin(), ip_temp.end(), ip_cond3.begin(), find_elem_cond3 );
 		ip_cond3.resize( std::distance( ip_cond3.begin(), it3 ) );
 		ip_pool_out.reserve( ip_pool_out.size() + ip_cond3.size() );
 		ip_pool_out.insert( ip_pool_out.end(), ip_cond3.begin(), ip_cond3.end() );
@@ -206,7 +241,7 @@ int main( int argc, char const *argv[] )
 					s.append( "." );
 #endif
 				}
-				std::cout << std::to_string(*ip_part);
+				std::cout << std::to_string( *ip_part );
 #ifdef SAVE_IN_FILE
 				s.append( std::to_string( *ip_part ) );
 #endif
@@ -292,5 +327,3 @@ int main( int argc, char const *argv[] )
 
 	return 0;
 }
-
-
