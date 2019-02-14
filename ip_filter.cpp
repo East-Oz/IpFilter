@@ -15,7 +15,6 @@
 // (".11", '.') -> ["", "11"]
 // ("11.22", '.') -> ["11", "22"]
 
-
 #define	SAVE_IN_FILE	1 
 
 typedef std::vector<unsigned char> IPT;
@@ -44,7 +43,7 @@ unsigned char string_to_char( std::string val )
 	char c;
 	int n = 0;
 	size_t size = val.size();
-	int count = 0;
+	size_t count = 0;
 	while( count < size )
 	{
 		c = *start;
@@ -57,10 +56,8 @@ unsigned char string_to_char( std::string val )
 		++count;
 	}
 	out_value = n;
-
 	return out_value;
 }
-
 
 std::vector<unsigned char> get_vector_ip( std::string str, char d )
 {
@@ -78,7 +75,6 @@ std::vector<unsigned char> get_vector_ip( std::string str, char d )
 
 	return out;
 }
-
 
 bool find_elements_function( const std::vector<unsigned char>& val )
 {
@@ -131,7 +127,6 @@ bool compare( T& _src, U count, K val )
 	}
 }
 
-
 template<typename T, typename U, typename K, typename ...Args>
 bool compare( T& _src, U count, K val, Args ... args )
 {
@@ -150,8 +145,6 @@ bool compare( T& _src, U count, K val, Args ... args )
 	return bResult;
 }
 
-
-
 template<typename T, typename ...Args>
 auto copy_collection( T& _src, T& _dst, Args ... args )
 {
@@ -159,7 +152,7 @@ auto copy_collection( T& _src, T& _dst, Args ... args )
 	IP_STORAGE::iterator dst_it = _dst.begin();
 	for( IP_STORAGE::iterator it = _src.begin(); it != _src.end(); ++it )
 	{
-		int count = 0;
+		size_t count = 0;
 		bResult = compare( *it, count, args... );
 
 		if( bResult )
@@ -170,12 +163,10 @@ auto copy_collection( T& _src, T& _dst, Args ... args )
 	return dst_it;
 }
 
-
-int main( int argc, char const *argv[] )
+int main( int, char const* )
 {
 	using ip_addr_vec = std::vector<std::vector<unsigned char>>;
 
-	auto start = std::chrono::steady_clock::now();
 	try
 	{
 		ip_addr_vec ip_pool;
